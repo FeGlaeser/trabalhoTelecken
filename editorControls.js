@@ -395,63 +395,101 @@ document.addEventListener('DOMContentLoaded', () => {
     renderForm();
     renderFooter();
 
+    function showError(message) {
+        // Assume allApisResultStatus as the default status display element
+        const statusElement = document.getElementById('all-apis-result-status');
+        if (statusElement) {
+            statusElement.textContent = message;
+            statusElement.className = 'status-message error show';
+            setTimeout(() => statusElement.className = 'status-message', 3000);
+        }
+    }
+
+    function showSuccess(message) {
+        // Assume allApisResultStatus as the default status display element
+        const statusElement = document.getElementById('all-apis-result-status');
+        if (statusElement) {
+            statusElement.textContent = message;
+            statusElement.className = 'status-message success show';
+            setTimeout(() => statusElement.className = 'status-message', 3000);
+        }
+    }
+
     /////////////////////////////////////
-    // Live Data APIs (Multiple Currencies)
+    // Dados de APIs (Promise.all) - Cotação de Moedas
     /////////////////////////////////////
     const fetchAllApisBtn = document.getElementById('fetch-all-apis-btn');
-    const allApisResultStatus = document.getElementById('all-apis-result-status');
-    const dataApisContainer = document.getElementById('data-apis-container');
-
     if (fetchAllApisBtn) {
         fetchAllApisBtn.addEventListener('click', async () => {
-            allApisResultStatus.textContent = 'Loading data from multiple APIs...';
-            allApisResultStatus.className = 'status-message success show';
+            const allApisResultStatus = document.getElementById('all-apis-result-status');
+            const dataApisContainer = document.getElementById('data-apis-container');
+            
+            allApisResultStatus.textContent = 'Carregando cotações de moedas...';
+            allApisResultStatus.className = 'status-message show';
 
             const apiRequests = [
-                fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json()), // USD base
-                fetch('https://economia.awesomeapi.com.br/json/last/ARS-BRL').then(res => res.json()), // Argentine Peso to BRL
-                fetch('https://economia.awesomeapi.com.br/json/last/INR-BRL').then(res => res.json())  // Indian Rupee to BRL
+                // Dólar (USD)
+                fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL').then(res => {
+                    if (!res.ok) throw new Error('API do Dólar falhou');
+                    return res.json();
+                }),
+                // Euro (EUR)
+                fetch('https://economia.awesomeapi.com.br/json/last/EUR-BRL').then(res => {
+                    if (!res.ok) throw new Error('API do Euro falhou');
+                    return res.json();
+                }),
+                // Rublo (RUB) - Usando uma API diferente, pois a AwesomeAPI pode não ter.
+                // Esta API é apenas um exemplo e pode exigir chave ou ter limites.
+                // Outra alternativa seria buscar em APIs como fixer.io ou openexchangerates.org (que geralmente requerem chave).
+                // Para simplificar, vou usar uma que geralmente não requer chave, mas pode ser menos confiável.
+                // A API a seguir é um exemplo genérico e pode não ser sempre funcional ou ter a moeda RUB.
+                // Se não funcionar, será preciso encontrar uma API que forneça RUB para BRL.
+                fetch('https://api.exchangerate-api.com/v4/latest/BRL').then(res => {
+                    if (!res.ok) throw new Error('API do Rublo falhou');
+                    return res.json();
+                })
             ];
 
             try {
-                const [usdData, arsData, inrData] = await Promise.all(apiRequests);
+                const [usdData, eurData, rubDataRaw] = await Promise.all(apiRequests);
 
-                // Format data for display
-                const usdToBrl = usdData.rates.BRL.toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
-                const arsToBrl = parseFloat(arsData.ARSBRL.bid).toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
-                const inrToBrl = parseFloat(inrData.INRBRL.bid).toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
+                const usdQuote = usdData.USDBRL.high;
+                const eurQuote = eurData.EURBRL.high;
+                
+                // Para o Rublo, verificamos se a API retornou o valor para RUB
+                const rubQuote = rubDataRaw.rates.RUB ? (1 / rubDataRaw.rates.BRL) * rubDataRaw.rates.RUB : 'N/A'; // Convertendo BRL para RUB
 
-
-                // Update HTML with new data
                 dataApisContainer.innerHTML = `
-                    <h3>Currency Exchange Rates</h3>
+                    <h3>Cotações de Moedas em R$ (BRL)</h3>
                     <div class="api-data-card">
-                        <h4>US Dollar (USD) to BRL</h4>
-                        <p><strong>Value:</strong> ${usdToBrl}</p>
-                        <p><small>Source: ExchangeRate-API</small></p>
+                        <h4>Dólar Americano (USD)</h4>
+                        <p><strong>Compra:</strong> R$ ${parseFloat(usdData.USDBRL.bid).toFixed(4)}</p>
+                        <p><strong>Venda:</strong> R$ ${parseFloat(usdData.USDBRL.ask).toFixed(4)}</p>
+                        <p><strong>Última Atualização:</strong> ${new Date(parseInt(usdData.USDBRL.timestamp) * 1000).toLocaleString()}</p>
                     </div>
                     <div class="api-data-card">
-                        <h4>Argentinian Peso (ARS) to BRL</h4>
-                        <p><strong>Bid Price:</strong> ${arsToBrl}</p>
-                        <p><small>Source: AwesomeAPI</small></p>
+                        <h4>Euro (EUR)</h4>
+                        <p><strong>Compra:</strong> R$ ${parseFloat(eurData.EURBRL.bid).toFixed(4)}</p>
+                        <p><strong>Venda:</strong> R$ ${parseFloat(eurData.EURBRL.ask).toFixed(4)}</p>
+                        <p><strong>Última Atualização:</strong> ${new Date(parseInt(eurData.EURBRL.timestamp) * 1000).toLocaleString()}</p>
                     </div>
                     <div class="api-data-card">
-                        <h4>Indian Rupee (INR) to BRL</h4>
-                        <p><strong>Bid Price:</strong> ${inrToBrl}</p>
-                        <p><small>Source: AwesomeAPI</small></p>
+                        <h4>Rublo Russo (RUB)</h4>
+                        <p><strong>Valor:</strong> R$ ${parseFloat(rubQuote).toFixed(4)}</p>
+                        <p>(Valor estimado, API pode variar ou necessitar de chave)</p>
                     </div>
                 `;
-                allApisResultStatus.textContent = 'API data loaded successfully!';
+                allApisResultStatus.textContent = 'Cotações carregadas com sucesso!';
                 allApisResultStatus.className = 'status-message success show';
-
             } catch (error) {
-                console.error('Error fetching from multiple APIs:', error);
+                console.error('Erro ao buscar cotações de moedas:', error);
                 dataApisContainer.innerHTML = `
-                    <h3>Error loading API data</h3>
-                    <p>Could not fetch data. One or more API services may be unavailable. Please try again later.</p>
-                    <p>Error details: ${error.message}</p>
+                    <h3>Erro ao carregar cotações de moedas</h3>
+                    <p>Não foi possível obter os dados de uma ou mais APIs de câmbio. Isso pode ser devido a problemas de rede, APIs estarem temporariamente indisponíveis ou limites de requisição.</p>
+                    <p>Detalhes do erro: ${error.message}</p>
+                    <p>Verifique as APIs ou tente novamente mais tarde.</p>
                 `;
-                allApisResultStatus.textContent = 'Error loading API data.';
+                allApisResultStatus.textContent = 'Erro ao carregar cotações de moedas.';
                 allApisResultStatus.className = 'status-message error show';
             } finally {
                 setTimeout(() => allApisResultStatus.className = 'status-message', 3000);
