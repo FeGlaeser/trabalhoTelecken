@@ -396,7 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderFooter();
 
     /////////////////////////////////////
-    // Live Data APIs (Bitcoin, China, Euro)
+    // Live Data APIs (Multiple Currencies)
     /////////////////////////////////////
     const fetchAllApisBtn = document.getElementById('fetch-all-apis-btn');
     const allApisResultStatus = document.getElementById('all-apis-result-status');
@@ -408,35 +408,36 @@ document.addEventListener('DOMContentLoaded', () => {
             allApisResultStatus.className = 'status-message success show';
 
             const apiRequests = [
-                fetch('https://api.coindesk.com/v1/bpi/currentprice/BRL.json').then(res => res.json()),
-                fetch('http://worldtimeapi.org/api/timezone/Asia/Shanghai').then(res => res.json()),
-                fetch('https://economia.awesomeapi.com.br/json/last/EUR-BRL').then(res => res.json())
+                fetch('https://open.er-api.com/v6/latest/USD').then(res => res.json()), // USD base
+                fetch('https://economia.awesomeapi.com.br/json/last/ARS-BRL').then(res => res.json()), // Argentine Peso to BRL
+                fetch('https://economia.awesomeapi.com.br/json/last/INR-BRL').then(res => res.json())  // Indian Rupee to BRL
             ];
 
             try {
-                const [bitcoinData, chinaTimeData, euroData] = await Promise.all(apiRequests);
+                const [usdData, arsData, inrData] = await Promise.all(apiRequests);
 
                 // Format data for display
-                const bitcoinPrice = parseFloat(bitcoinData.bpi.BRL.rate_float).toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
-                const chinaTime = chinaTimeData.datetime.substring(11, 19);
-                const euroPrice = parseFloat(euroData.EURBRL.bid).toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
+                const usdToBrl = usdData.rates.BRL.toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
+                const arsToBrl = parseFloat(arsData.ARSBRL.bid).toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
+                const inrToBrl = parseFloat(inrData.INRBRL.bid).toLocaleString('en-US', { style: 'currency', currency: 'BRL' });
+
 
                 // Update HTML with new data
                 dataApisContainer.innerHTML = `
-                    <h3>Quotes and Services Data</h3>
+                    <h3>Currency Exchange Rates</h3>
                     <div class="api-data-card">
-                        <h4>Bitcoin (BTC) Price</h4>
-                        <p><strong>Value:</strong> ${bitcoinPrice}</p>
-                        <p><small>Source: CoinDesk API</small></p>
+                        <h4>US Dollar (USD) to BRL</h4>
+                        <p><strong>Value:</strong> ${usdToBrl}</p>
+                        <p><small>Source: ExchangeRate-API</small></p>
                     </div>
                     <div class="api-data-card">
-                        <h4>Time in Beijing, China</h4>
-                        <p><strong>Local Time:</strong> ${chinaTime}</p>
-                        <p><small>Source: WorldTimeAPI</small></p>
+                        <h4>Argentinian Peso (ARS) to BRL</h4>
+                        <p><strong>Bid Price:</strong> ${arsToBrl}</p>
+                        <p><small>Source: AwesomeAPI</small></p>
                     </div>
                     <div class="api-data-card">
-                        <h4>Euro (EUR) Exchange Rate</h4>
-                        <p><strong>Bid Price:</strong> ${euroPrice}</p>
+                        <h4>Indian Rupee (INR) to BRL</h4>
+                        <p><strong>Bid Price:</strong> ${inrToBrl}</p>
                         <p><small>Source: AwesomeAPI</small></p>
                     </div>
                 `;
