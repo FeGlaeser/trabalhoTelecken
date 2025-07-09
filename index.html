@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" >
+  <meta name="viewport" content="width=device-width, initial-scale=1" >
+  <title>Site Editor</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.0.0/dist/tailwind.min.css" rel="stylesheet" >
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <button id="toggle-editor-btn" class="toggle-editor-btn">☰</button>
+
+  <div class="editor-container">
+    <div class="unified-editor-container">
+      <div class="editor-section">
+        <div class="flex justify-between mb-3">
+          <button id="tab-header" class="bg-green-700 hover:bg-green-600 w-1/6">Header</button>
+          <button id="tab-menu" class="bg-gray-700 hover:bg-gray-600 w-1/6">Menu</button>
+          <button id="tab-gallery" class="bg-gray-700 hover:bg-gray-600 w-1/6">Gallery</button>
+          <button id="tab-form" class="bg-gray-700 hover:bg-gray-600 w-1/6">Form</button>
+          <button id="tab-data-apis" class="bg-gray-700 hover:bg-gray-600 w-1/6">API Data</button>
+          <button id="tab-footer" class="bg-gray-700 hover:bg-gray-600 w-1/6">Footer</button>
+          <button id="tab-export" class="bg-gray-700 hover:bg-gray-600 w-1/6">Export</button>
+        </div>
+      </div>
+
+      <div id="editor-header" style="display: block;">
+        <div class="editor-section">
+          <h2>Header Editor</h2>
+          <label for="header-bg-color">Header Background Color:</label>
+          <input type="color" id="header-bg-color" value="#2d3748">
+
+          <label for="header-text-color">Header Text Color:</label>
+          <input type="color" id="header-text-color" value="#ffffff">
+
+          <label for="header-title">Title:</label>
+          <input type="text" id="header-title" value="Insert Site Title">
+
+          <label for="header-subtitle">Subtitle:</label>
+          <input type="text" id="header-subtitle" value="Insert Subtitle Text">
+
+          <label for="header-align">Text Alignment:</label>
+          <select id="header-align">
+            <option value="left">Left</option>
+            <option value="center" selected>Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="editor-menu" style="display: none;">
+        <div class="editor-section">
+          <h2>Menu Editor</h2>
+          <label for="menu-bg-color">Menu Background Color:</label>
+          <input type="color" id="menu-bg-color" value="#4a5568">
+
+          <label for="menu-item-color">Menu Items Color:</label>
+          <input type="color" id="menu-item-color" value="#ffffff">
+
+          <label for="menu-hover-color">Menu Items Hover Color:</label>
+          <input type="color" id="menu-hover-color" value="#a0aec0">
+
+          <label for="menu-item-font-size">Items Font Size:</label>
+          <input type="range" id="menu-item-font-size" min="12" max="24" value="16">
+          <span id="menu-item-font-size-value">16px</span>
+
+          <label for="menu-item-spacing">Item Spacing (px):</label>
+          <input type="range" id="menu-item-spacing" min="0" max="50" value="20">
+          <span id="menu-item-spacing-value">20px</span>
+
+          <label for="menu-align">Menu Alignment:</label>
+          <select id="menu-align">
+            <option value="flex-start">Left</option>
+            <option value="center" selected>Center</option>
+            <option value="flex-end">Right</option>
+            <option value="space-around">Distribute</option>
+            <option value="space-between">Space Between</option>
+          </select>
+
+          <h3>Menu Items</h3>
+          <div id="menu-items-list">
+          </div>
+          <button id="add-menu-item-btn" class="action-button mt-3">Add Menu Item</button>
+        </div>
+      </div>
+
+      <div id="editor-gallery" style="display: none;">
+        <div class="editor-section">
+          <h2>Gallery Editor</h2>
+          <label for="gallery-spacing">Card Spacing (px):</label>
+          <input type="range" id="gallery-spacing" min="0" max="50" value="15">
+          <span id="gallery-spacing-value">15px</span>
+
+          <label for="gallery-align">Gallery Alignment:</label>
+          <select id="gallery-align">
+            <option value="flex-start">Left</option>
+            <option value="center" selected>Center</option>
+            <option value="flex-end">Right</option>
+            <option value="space-around">Distribute</option>
+            <option value="space-between">Space Between</option>
+          </select>
+
+          <h3>Card Style</h3>
+          <label for="card-bg-color">Card Background Color:</label>
+          <input type="color" id="card-bg-color" value="#ffffff">
+
+          <label for="card-border-color">Card Border Color:</label>
+          <input type="color" id="card-border-color" value="#e2e8f0">
+
+          <label for="card-border-radius">Card Border Radius (px):</label>
+          <input type="range" id="card-border-radius" min="0" max="20" value="8">
+          <span id="card-border-radius-value">8px</span>
+
+          <label for="card-width">Card Width (px):</label>
+          <input type="range" id="card-width" min="100" max="400" value="200">
+          <span id="card-width-value">200px</span>
+
+          <label for="card-height">Card Height (px):</label>
+          <input type="range" id="card-height" min="100" max="400" value="250">
+          <span id="card-height-value">250px</span>
+
+          <h3>Card Text Style</h3>
+          <label for="card-text-bg-color">Card Text Background Color:</label>
+          <input type="color" id="card-text-bg-color" value="#f7fafc">
+
+          <label for="card-text-color">Card Text Color:</label>
+          <input type="color" id="card-text-color" value="#2d3748">
+
+          <label for="card-text-font-size">Card Text Font Size:</label>
+          <input type="range" id="card-text-font-size" min="10" max="20" value="14">
+          <span id="card-text-font-size-value">14px</span>
+
+          <h3>Gallery Items</h3>
+          <div id="gallery-items-list">
+          </div>
+          <button id="add-gallery-item-btn" class="action-button mt-3">Add Gallery Item</button>
+        </div>
+      </div>
+
+      <div id="editor-form" style="display: none;">
+        <div class="editor-section">
+          <h2>Form Editor</h2>
+          <label for="form-title">Form Title:</label>
+          <input type="text" id="form-title" value="Insert Form Title">
+
+          <label for="form-description">Form Description:</label>
+          <textarea id="form-description">Insert Form Description</textarea>
+
+          <h3>Form Style</h3>
+          <label for="form-bg-color">Form Background Color:</label>
+          <input type="color" id="form-bg-color" value="#ffffff">
+
+          <label for="form-text-color">Form Text Color:</label>
+          <input type="color" id="form-text-color" value="#2d3748">
+
+          <label for="form-border-color">Form Border Color:</label>
+          <input type="color" id="form-border-color" value="#e2e8f0">
+
+          <label for="form-border-radius">Form Border Radius (px):</label>
+          <input type="range" id="form-border-radius" min="0" max="20" value="8">
+          <span id="form-border-radius-value">8px</span>
+
+          <h3>Submit Button Style</h3>
+          <label for="form-button-bg-color">Button Background Color:</label>
+          <input type="color" id="form-button-bg-color" value="#4c51bf">
+
+          <label for="form-button-text-color">Button Text Color:</label>
+          <input type="color" id="form-button-text-color" value="#ffffff">
+
+          <h3>Form Fields</h3>
+          <div id="form-fields-list">
+          </div>
+          <button id="add-form-field-btn" class="action-button mt-3">Add Form Field</button>
+        </div>
+      </div>
+
+      <div id="editor-data-apis" style="display: none;">
+        <div class="editor-section">
+          <h2>Multiple API Data</h2>
+          <p>Click to fetch data from multiple APIs (JSONPlaceholder, SWAPI, BoredAPI) simultaneously.</p>
+          <button id="fetch-all-apis-btn" class="action-button mt-3">Fetch All Data</button>
+          <div id="all-apis-result-status" class="status-message"></div>
+        </div>
+      </div>
+
+      <div id="editor-footer" style="display: none;">
+        <div class="editor-section">
+          <h2>Footer Editor</h2>
+          <label for="footer-text">Footer Text:</label>
+          <input type="text" id="footer-text" value="Insert Footer Text">
+
+          <label for="footer-font-size">Font Size (px):</label>
+          <input type="range" id="footer-font-size" min="10" max="24" value="14">
+          <span id="footer-font-size-value">14px</span>
+
+          <label for="footer-text-color">Text Color:</label>
+          <input type="color" id="footer-text-color" value="#ffffff">
+
+          <label for="footer-bg-color">Background Color:</label>
+          <input type="color" id="footer-bg-color" value="#2d3748">
+
+          <label for="footer-align">Text Alignment:</label>
+          <select id="footer-align">
+            <option value="left">Left</option>
+            <option value="center" selected>Center</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="editor-export" style="display: none;">
+        <div class="editor-section">
+          <h2>Export Site</h2>
+
+          <div class="button-row">
+            <button id="show-code-btn" class="action-button">Show Code</button>
+            <button id="save-code-btn" class="save-button">Save Code</button>
+          </div>
+
+          <div class="button-row">
+            <button id="load-code-btn" class="load-button">Load Saved</button>
+            <button id="clear-code-btn" class="clear-button">Clear Saved</button>
+          </div>
+
+          <div id="status-message" class="status-message"></div>
+
+          <div id="code-preview" class="code-preview" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="generated-menu-container">
+    <div id="generated-header" class="generated-header"></div>
+    <div id="generated-menu" class="generated-menu">
+      <div id="menu-list" class="menu-items"></div>
+    </div>
+    <div id="gallery-container" class="gallery-container"></div>
+    <div id="form-container" class="form-container"></div>
+    <div id="interactive-api-container" class="api-container"></div>
+    <div id="data-apis-container" class="api-container"></div>
+    <div id="generated-footer" class="generated-footer">
+      Insert Footer Text
+    </div>
+  </div>
+
+  <script type="module" src="main.js"></script>
+</body>
+
+</html>
